@@ -11,7 +11,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Phục vụ frontend
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.use(express.static(path.join(__dirname, 'public')));
 // Routes API
 app.use('/api/auth',     require('./routes/auth'));
 app.use('/api/stories',  require('./routes/stories'));
@@ -20,7 +20,7 @@ app.use('/api/comments', require('./routes/comments'));
 
 // Tất cả route khác → trả về index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Xử lý lỗi
