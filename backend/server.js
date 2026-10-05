@@ -17,6 +17,7 @@ app.use('/api/auth',     require('./routes/auth'));
 app.use('/api/stories',  require('./routes/stories'));
 app.use('/api/chapters', require('./routes/chapters'));
 app.use('/api/comments', require('./routes/comments'));
+app.use('/api/upload', require('./routes/upload'));
 
 // Tất cả route khác → trả về index.html
 app.get('*', (req, res) => {

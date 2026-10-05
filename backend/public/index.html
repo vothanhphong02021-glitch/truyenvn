@@ -7,12 +7,20 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0f0e17;--bg-card:#1a1927;--bg-panel:#221f35;
-  --accent:#e8a838;--accent2:#c45c8a;
-  --text:#e8e6f0;--muted:#8884a0;--dim:#5a5870;
-  --border:#2e2b45;--success:#4caf82;--danger:#e05c5c;
-  --gold:#ffd700;--r:10px;--rs:6px;
-  --shadow:0 4px 24px rgba(0,0,0,.5);
+  --bg:#ffffff;
+  --bg-card:#f8f8f8;
+  --bg-panel:#f0f0f0;
+  --accent:#e8243a;        /* đỏ nổi bật */
+  --accent2:#c45c8a;
+  --text:#1a1a2e;
+  --muted:#666680;
+  --dim:#999ab0;
+  --border:#e0e0e8;
+  --success:#4caf82;
+  --danger:#e05c5c;
+  --gold:#f0a500;
+  --r:10px;--rs:6px;
+  --shadow:0 4px 24px rgba(0,0,0,.08);
   --font:'Segoe UI',sans-serif;--story:'Georgia',serif;
 }
 html{scroll-behavior:smooth}
@@ -326,6 +334,16 @@ footer{background:var(--bg-panel);border-top:1px solid var(--border);padding:36p
   </section>
   <div class="container">
     <div class="gfilter" id="homeGenreFilter"></div>
+    <!-- BẢNG XẾP HẠNG THEO THỜI GIAN -->
+<div class="section">
+  <div class="sec-hdr"><div class="sec-title">🏆 Bảng Xếp Hạng</div></div>
+  <div style="display:flex;gap:8px;margin-bottom:20px">
+    <button class="gbtn active" id="rankTabDay" onclick="switchRankTab('day',this)">📅 Hôm nay</button>
+    <button class="gbtn" id="rankTabWeek" onclick="switchRankTab('week',this)">📆 Tuần này</button>
+    <button class="gbtn" id="rankTabMonth" onclick="switchRankTab('month',this)">🗓️ Tháng này</button>
+  </div>
+  <div class="sgrid sgrid-wide" id="rankTabGrid"></div>
+</div>
     <div class="section">
       <div class="sec-hdr"><div class="sec-title">⭐ Truyện Nổi Bật</div><a href="#" class="see-all" onclick="navigate('browse')">Xem tất cả →</a></div>
       <div class="sgrid sgrid-wide" id="featuredGrid"></div>
@@ -560,10 +578,30 @@ footer{background:var(--bg-panel);border-top:1px solid var(--border);padding:36p
           <div class="fgrp hidden" id="priceField"><label class="flbl">Giá (VNĐ)</label><input type="number" id="upPrice" placeholder="VD: 30000" min="5000" step="5000"></div>
         </div>
         <div>
-          <h3 style="margin-bottom:16px">Ảnh bìa (emoji)</h3>
-          <div class="cvup"><div class="ico" id="coverPrev">📖</div><p style="font-size:13px;color:var(--muted)">Chọn emoji bên dưới làm bìa</p></div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px" id="emojiPick"></div>
-        </div>
+  <h3 style="margin-bottom:16px">Ảnh bìa</h3>
+  <!-- Preview ảnh -->
+  <div id="coverPreviewBox" style="width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg-panel);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;max-height:280px" onclick="document.getElementById('coverFileInput').click()">
+    <img id="coverImgPreview" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+    <div id="coverPlaceholder" style="text-align:center;padding:20px">
+      <div style="font-size:40px;margin-bottom:10px">🖼️</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text)">Nhấn để chọn ảnh bìa</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">JPG, PNG, WEBP — Tối đa 5MB</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:4px">Tỉ lệ đẹp nhất: 2:3 (VD: 400x600px)</div>
+    </div>
+  </div>
+  <!-- Input file ẩn -->
+  <input type="file" id="coverFileInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previewCover(event)">
+  <!-- Nút đổi ảnh -->
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button class="btn btn-out btn-sm" onclick="document.getElementById('coverFileInput').click()">📁 Chọn ảnh</button>
+    <button class="btn btn-out btn-sm" onclick="removeCover()">🗑️ Xóa ảnh</button>
+  </div>
+  <!-- Hoặc dùng emoji -->
+  <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Hoặc chọn emoji đại diện:</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap" id="emojiPick"></div>
+  </div>
+</div>
       </div>
       <div class="fgrp" style="margin-top:16px"><label class="flbl">Thể loại * (tối đa 3)</label><div class="gchks" id="genreChks"></div></div>
       <div class="fgrp"><label class="flbl">Mô tả truyện *</label><textarea id="upDesc" placeholder="Giới thiệu nội dung truyện..." style="height:110px;resize:vertical"></textarea></div>
@@ -647,6 +685,19 @@ footer{background:var(--bg-panel);border-top:1px solid var(--border);padding:36p
 </footer>
 
 <script>
+  function switchRankTab(type, el) {
+  document.querySelectorAll('#rankTabDay,#rankTabWeek,#rankTabMonth')
+    .forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const stories = DB.get('stories') || [];
+  // Giả lập: sort khác nhau theo tab
+  let sorted = [...stories];
+  if(type === 'day')   sorted.sort((a,b) => b.views - a.views);
+  if(type === 'week')  sorted.sort((a,b) => b.rating - a.rating);
+  if(type === 'month') sorted.sort((a,b) => b.chapters - a.chapters);
+  document.getElementById('rankTabGrid').innerHTML =
+    sorted.slice(0,6).map(sCard).join('');
+}
  
 // =================== DATABASE ===================
 const API = 'http://localhost:5000/api';
@@ -841,7 +892,9 @@ function sCard(s){
                s.status==='Hoàn thành'?'<span class="scbadge b-full">FULL</span>':'';
   const pb=s.type==='paid'?'<span class="scbadge b-paid" style="top:auto;bottom:8px">💰</span>':'';
   return`<div class="scard" onclick="viewStory(${s.id})">
-    <div class="scover">${s.cover}${badge}${pb}</div>
+    <div class="scover">${s.cover && s.cover.startsWith('/uploads/') ? 
+  `<img src="${s.cover}" style="width:100%;height:100%;object-fit:cover">` : 
+  s.cover}${badge}${pb}</div>
     <div class="sinfo">
       <div class="stitle">${s.title}</div>
       <div class="sauthor">✍️ ${s.author}</div>
@@ -859,6 +912,7 @@ function renderHome(){
   document.getElementById('homeGenreFilter').innerHTML=
     allG.map((g,i)=>`<button class="gbtn${i===0?' active':''}" onclick="homeFilterG(this,'${g}')">${g}</button>`).join('');
   renderHomeGrids(stories);
+  switchRankTab('day', document.getElementById('rankTabDay'));
 }
 function homeFilterG(el,g){
   document.querySelectorAll('#homeGenreFilter .gbtn').forEach(b=>b.classList.remove('active'));
@@ -1274,13 +1328,43 @@ function renderUpload(){
   if(S.user)document.getElementById('upAuthor').value=S.user.username;
   S.coverEmoji='📖';document.getElementById('coverPrev').textContent='📖';
 }
+// Preview ảnh bìa khi chọn file
+function previewCover(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    toast('Ảnh quá lớn! Tối đa 5MB', 'err');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('coverImgPreview').src = e.target.result;
+    document.getElementById('coverImgPreview').style.display = 'block';
+    document.getElementById('coverPlaceholder').style.display = 'none';
+    document.getElementById('coverPreviewBox').style.borderStyle = 'solid';
+    S.coverFile = file; // Lưu file để upload sau
+    S.coverEmoji = ''; // Xóa emoji nếu đang chọn
+  };
+  reader.readAsDataURL(file);
+}
+
+// Xóa ảnh bìa
+function removeCover() {
+  document.getElementById('coverImgPreview').src = '';
+  document.getElementById('coverImgPreview').style.display = 'none';
+  document.getElementById('coverPlaceholder').style.display = 'flex';
+  document.getElementById('coverPreviewBox').style.borderStyle = 'dashed';
+  document.getElementById('coverFileInput').value = '';
+  S.coverFile = null;
+  S.coverEmoji = '📖';
+}
 function setEmoji(e){S.coverEmoji=e;document.getElementById('coverPrev').textContent=e}
 function limitG(){
   const checked=document.querySelectorAll('#genreChks input:checked');
   document.querySelectorAll('#genreChks input:not(:checked)').forEach(cb=>cb.disabled=checked.length>=3);
 }
 function togglePF(){document.getElementById('priceField').classList.toggle('hidden',document.getElementById('upType').value!=='paid')}
-function submitStory(){
+async function submitStory(){
   if(!S.user){navigate('login');return}
   const title=document.getElementById('upTitle').value.trim();
   const author=document.getElementById('upAuthor').value.trim();
@@ -1290,10 +1374,34 @@ function submitStory(){
   if(!title||!author||!desc||!ch1t||!ch1c){toast('Vui lòng điền đầy đủ các trường có dấu *','err');return}
   const genres=Array.from(document.querySelectorAll('#genreChks input:checked')).map(c=>c.value);
   if(!genres.length){toast('Vui lòng chọn ít nhất một thể loại','err');return}
+
+  let cover = S.coverEmoji || '📖';
+
+  // Nếu có file ảnh → upload lên server trước
+  if(S.coverFile) {
+    toast('Đang upload ảnh bìa...','inf');
+    const formData = new FormData();
+    formData.append('cover', S.coverFile);
+    try {
+      const res = await fetch(`${API}/upload/cover`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if(data.success) {
+        cover = data.url; // URL ảnh từ server
+      } else {
+        toast('Upload ảnh thất bại, dùng emoji thay thế','err');
+      }
+    } catch(e) {
+      toast('Lỗi upload ảnh','err');
+    }
+  }
+
   const type=document.getElementById('upType').value;
   const price=type==='paid'?(parseInt(document.getElementById('upPrice').value)||30000):null;
   const nid=DB.nextId('s');
-  const ns={id:nid,title,author,authorId:S.user.id,cover:S.coverEmoji,genres,desc,
+  const ns={id:nid,title,author,authorId:S.user.id,cover,genres,desc,
     status:document.getElementById('upStatus').value,
     chapters:1,views:0,rating:0,ratingCount:0,words:ch1c.split(/\s+/).length,
     updateDate:today(),createDate:today(),type,price,isNew:true};
