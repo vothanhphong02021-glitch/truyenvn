@@ -56,9 +56,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0
 .page{display:none;max-width:1200px;margin:0 auto;padding:24px 16px}
 .page.active{display:block}
 /* HERO */
-.hero{background:linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%);color:#fff;padding:48px 24px;text-align:center;margin-bottom:32px}
-.hero h1{font-size:2.2rem;font-weight:800;margin-bottom:10px}
-.hero p{font-size:1.1rem;opacity:.9;margin-bottom:24px}
+.hero{background:linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%);color:#fff;padding:36px 20px;text-align:center;margin-bottom:20px}
+.hero h1{font-size:2.2rem;font-weight:800;margin-bottom:8px}
+.hero p{font-size:1.1rem;opacity:.9;margin-bottom:20px}
+@media(max-width:600px){.hero{padding:24px 16px;margin-bottom:12px}.hero h1{font-size:1.4rem}.hero p{font-size:.95rem;margin-bottom:14px}}
 .hero-search{display:flex;max-width:500px;margin:0 auto;gap:0}
 .hero-search input{border-radius:var(--radius) 0 0 var(--radius);border:none;font-size:16px;padding:12px 16px}
 .hero-search button{border-radius:0 var(--radius) var(--radius) 0;padding:12px 24px;background:var(--accent);color:#fff;font-weight:700;font-size:15px;white-space:nowrap}
@@ -69,19 +70,26 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0
 .section-title{font-size:1.15rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
 .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:var(--primary);border-radius:2px}
 /* GENRE TAGS */
-.genre-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
-.genre-tag{padding:6px 16px;border-radius:20px;background:var(--bg2);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:.15s}
+.genre-tags-wrap{margin-bottom:20px}
+.genre-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0;overflow:hidden;max-height:42px;transition:max-height .3s ease}
+.genre-tags.expanded{max-height:500px}
+.genre-tag{padding:5px 13px;border-radius:20px;background:var(--bg2);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:.15s;white-space:nowrap}
 .genre-tag:hover,.genre-tag.active{background:#e3f0ff;color:var(--primary);border-color:var(--primary)}
+.genre-show-more{display:none;margin-top:6px;padding:4px 12px;border-radius:20px;background:none;border:1px solid var(--border);color:var(--text3);font-size:12px;cursor:pointer}
+.genre-show-more:hover{color:var(--primary);border-color:var(--primary)}
+@media(max-width:600px){.genre-show-more{display:inline-block}}
 /* STORY GRID */
-.story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+@media(max-width:600px){.story-grid{grid-template-columns:repeat(3,1fr);gap:8px}}
 .story-card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:.2s;border:1px solid var(--border)}
 .story-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.13)}
 .story-cover{width:100%;aspect-ratio:2/3;background:#e3f0ff;display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden;position:relative}
 .story-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.story-card-body{padding:10px}
-.story-card-title{font-size:13px;font-weight:700;margin-bottom:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.story-card-author{font-size:12px;color:var(--text3)}
-.story-card-meta{font-size:11px;color:var(--text3);margin-top:4px;display:flex;justify-content:space-between}
+.story-card-body{padding:8px}
+.story-card-title{font-size:12px;font-weight:700;margin-bottom:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.story-card-author{font-size:11px;color:var(--text3)}
+.story-card-meta{font-size:10px;color:var(--text3);margin-top:3px;display:flex;justify-content:space-between}
+@media(max-width:600px){.story-card-body{padding:6px}.story-card-title{font-size:11px}.story-card-meta{display:none}}
 /* LIST VIEW */
 .story-list{display:flex;flex-direction:column;gap:12px}
 .story-list-item{background:var(--card);border-radius:var(--radius);padding:14px;display:flex;gap:14px;box-shadow:var(--shadow);border:1px solid var(--border);transition:.2s}
@@ -114,7 +122,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0
 .ch-title{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chapter-item-actions{display:flex;gap:4px;flex-shrink:0}
 /* READER */
-.reader-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0;margin-bottom:20px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap}
+.reader-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0;margin-bottom:20px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:nowrap}
+.reader-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:20px;border-top:1px solid var(--border);gap:8px}
+.reader-bottom .btn{font-size:13px;padding:8px 14px}
+@media(max-width:480px){.reader-bottom .btn{font-size:12px;padding:7px 10px}}
 .reader-content{max-width:720px;margin:0 auto;font-size:17px;line-height:1.95;color:#222;padding:20px 0}
 .reader-content p{margin-bottom:14px}
 /* FORMS */
@@ -230,7 +241,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0
     </div>
   </div>
   <div style="max-width:1200px;margin:0 auto;padding:0 16px">
-    <div class="genre-tags" id="homeGenreTags"></div>
+    <div class="genre-tags-wrap">
+      <div class="genre-tags" id="homeGenreTags"></div>
+      <button class="genre-show-more" id="genreShowMore" onclick="toggleGenreTags()">▼ Xem thêm</button>
+    </div>
     <div id="homeContent"></div>
   </div>
 </div>
@@ -619,6 +633,15 @@ function renderGenreTags(){
     +GENRES.map(g=>`<span class="genre-tag" onclick="homeFilterG('${g}')">${g}</span>`).join('');
 }
 
+let genreExpanded=false;
+function toggleGenreTags(){
+  genreExpanded=!genreExpanded;
+  const el=document.getElementById('homeGenreTags');
+  const btn=document.getElementById('genreShowMore');
+  if(el)el.classList.toggle('expanded',genreExpanded);
+  if(btn)btn.textContent=genreExpanded?'▲ Rút gọn':'▼ Xem thêm';
+}
+
 function homeFilterG(genre){
   currentHomeGenre=genre;
   document.querySelectorAll('.genre-tag').forEach(t=>{
@@ -919,21 +942,19 @@ function readChapter({storyId,num}){
   const content=ch.content?ch.content.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join(''):'<p>Nội dung đang được cập nhật...</p>';
   c.innerHTML=`
     <div class="reader-nav">
-      <button class="back-btn" style="margin:0" onclick="navigate('story','${storyId}')">← Mục lục</button>
-      <div style="text-align:center;flex:1">
-        <div style="font-size:12px;color:var(--text3)">${s.title}</div>
-        <div style="font-weight:700;font-size:15px">${ch.title||'Chương '+num}</div>
+      <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="navigate('reader',{storyId:'${storyId}',num:${+num-1}})" ${!hasPrev?'disabled':''}>←</button>
+      <button class="back-btn" style="margin:0;flex:1;justify-content:center;max-width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:13px" onclick="navigate('story','${storyId}')">📋</button>
+      <div style="text-align:center;flex:2;min-width:0">
+        <div style="font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ch.title||'Chương '+num}</div>
+        <div style="font-size:11px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.title}</div>
       </div>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-secondary btn-sm" onclick="navigate('reader',{storyId:'${storyId}',num:${+num-1}})" ${!hasPrev?'disabled':''}>←</button>
-        <button class="btn btn-secondary btn-sm" onclick="navigate('reader',{storyId:'${storyId}',num:${+num+1}})" ${!hasNext?'disabled':''}>→</button>
-      </div>
+      <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="navigate('reader',{storyId:'${storyId}',num:${+num+1}})" ${!hasNext?'disabled':''}>→</button>
     </div>
     <div class="reader-content">${content}</div>
-    <div style="display:flex;justify-content:space-between;margin-top:32px;padding-top:20px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px">
-      <button class="btn btn-secondary" onclick="navigate('reader',{storyId:'${storyId}',num:${+num-1}})" ${!hasPrev?'disabled':''}>← Chương trước</button>
-      <button class="btn btn-primary" onclick="navigate('story','${storyId}')">📋 Mục lục</button>
-      <button class="btn btn-secondary" onclick="navigate('reader',{storyId:'${storyId}',num:${+num+1}})" ${!hasNext?'disabled':''}>Chương tiếp →</button>
+    <div class="reader-bottom">
+      <button class="btn btn-secondary" onclick="navigate('reader',{storyId:'${storyId}',num:${+num-1}})" ${!hasPrev?'disabled':''}>← Trước</button>
+      <button class="btn btn-primary" style="flex-shrink:0;padding:8px 16px" onclick="navigate('story','${storyId}')" title="Danh sách chương">📋</button>
+      <button class="btn btn-secondary" onclick="navigate('reader',{storyId:'${storyId}',num:${+num+1}})" ${!hasNext?'disabled':''}>Tiếp →</button>
     </div>`;
 }
 
